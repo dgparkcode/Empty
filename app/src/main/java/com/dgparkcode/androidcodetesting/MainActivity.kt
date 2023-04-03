@@ -10,6 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.dgparkcode.androidcodetesting.ui.theme.AndroidCodeTestingTheme
 
 class MainActivity : ComponentActivity() {
@@ -22,7 +25,33 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    val appNavController = rememberNavController()
+                    NavHost(
+                        navController = appNavController,
+                        startDestination = "main",
+                        route = "root"
+                    ) {
+                        composable(route = "main") {
+                            MainScreen(
+                                onNavigateToNumberScan = {
+                                    appNavController.navigate("scan")
+                                }
+                            )
+                        }
+                        composable(route = "scan") {
+                            NumberScannerScreen(
+                                onNavigateBackToNumbers = {
+                                    appNavController.navigate("main") {
+                                        popUpTo(route = "scan"){
+                                            inclusive = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
